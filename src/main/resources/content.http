@@ -1,0 +1,19 @@
+### ОБНОВИТЬ РЕКОМЕНДАЦИИ
+PATCH http://localhost:8085/updateRecommendation
+Content-Type: application/json
+x-trace-id: 123UFC
+
+{
+  "publisher": "Издатель",
+  "title": "Название",
+  "recommendationList": [
+    {
+      "publisher": "Издатель1",
+      "title": "Название1"
+    },
+    {
+      "publisher": "Издатель2",
+      "title": "Название2"
+    }
+  ]
+}
