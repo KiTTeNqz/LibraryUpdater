@@ -1,8 +1,10 @@
 package com.example.libraryupdater.config;
 
+import com.example.libraryupdater.logger.ExchangeFilterFunctionWebClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
@@ -17,6 +19,11 @@ public class WebClientConfig {
                         .responseTimeout(Duration.ofSeconds(30))
                         .doOnResponse((res, conn) -> conn.disposeNow())
                 ))
+                .filter(logRequestAndResponse())
                 .build();
+    }
+    @Bean
+    public ExchangeFilterFunction logRequestAndResponse() {
+        return new ExchangeFilterFunctionWebClient();
     }
 }

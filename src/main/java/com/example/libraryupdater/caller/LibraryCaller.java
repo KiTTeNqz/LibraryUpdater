@@ -1,5 +1,6 @@
 package com.example.libraryupdater.caller;
 
+import com.example.libraryupdater.exceptions.ErrorResponse;
 import com.example.libraryupdater.exceptions.ExceptionResponse;
 import com.example.libraryupdater.model.UpdateRecommendationExternalRequest;
 import com.example.libraryupdater.model.UpdateRecommendationGetExternalResponse;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -24,12 +27,14 @@ public class LibraryCaller {
 
         Mono<UpdateRecommendationGetExternalResponse> responseMono = webClient.post()
                 .uri("http://localhost:8081/getBooksList")
-                .header("x-trace-id", traceId)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .bodyValue(getExternalRequest)
                 .retrieve()
-                //onStatus(HttpStatus::isError, response -> handleErrorResponse(response))
-                .bodyToMono(UpdateRecommendationGetExternalResponse.class);
-                //.onErrorMap(ExceptionResponse.class, ex -> handleCustomException(ex));
+                .bodyToMono(UpdateRecommendationGetExternalResponse.class)
+                .onErrorResume(WebClientResponseException.class, ex->{
+                        ExceptionResponse body = ex.getResponseBodyAs(ExceptionResponse.class);
+                        return Mono.error(body);
+                });
         return responseMono;
     }
 
@@ -38,7 +43,11 @@ public class LibraryCaller {
                 .uri("http://localhost:8081/updateRecommendation")
                 .header("x-trace-id", traceId)
                 .body(patchRequest, UpdateRecommendationPatchRequest.class)
-                .exchangeToMono(response -> response.bodyToMono(Void.class));
+                .exchangeToMono(response -> response.bodyToMono(Void.class))
+                .onErrorResume(WebClientResponseException.class, ex->{
+                    ExceptionResponse body = ex.getResponseBodyAs(ExceptionResponse.class);
+                    return Mono.error(body);
+                });
     }
 
 }

@@ -1,12 +1,14 @@
 package com.example.libraryupdater.exceptions;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ErrorResponse {
     private String errorCode;
     private String messages;
