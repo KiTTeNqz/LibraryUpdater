@@ -1,6 +1,5 @@
 package com.example.libraryupdater.caller;
 
-import com.example.libraryupdater.exceptions.ErrorResponse;
 import com.example.libraryupdater.exceptions.ExceptionResponse;
 import com.example.libraryupdater.model.UpdateRecommendationExternalRequest;
 import com.example.libraryupdater.model.UpdateRecommendationGetExternalResponse;
@@ -9,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
@@ -33,6 +31,7 @@ public class LibraryCaller {
                 .bodyToMono(UpdateRecommendationGetExternalResponse.class)
                 .onErrorResume(WebClientResponseException.class, ex->{
                         ExceptionResponse body = ex.getResponseBodyAs(ExceptionResponse.class);
+                        System.out.println(body.getMessages());
                         return Mono.error(body);
                 });
         return responseMono;
@@ -45,6 +44,7 @@ public class LibraryCaller {
                 .body(patchRequest, UpdateRecommendationPatchRequest.class)
                 .exchangeToMono(response -> response.bodyToMono(Void.class))
                 .onErrorResume(WebClientResponseException.class, ex->{
+                    System.out.println(ex.getResponseBodyAsString());
                     ExceptionResponse body = ex.getResponseBodyAs(ExceptionResponse.class);
                     return Mono.error(body);
                 });

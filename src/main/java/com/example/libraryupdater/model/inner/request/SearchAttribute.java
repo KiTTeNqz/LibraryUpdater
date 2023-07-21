@@ -2,25 +2,20 @@ package com.example.libraryupdater.model.inner.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class SearchAttribute {
-    private String attribute;
+    private String searchAttribute;
     private String value;
-    private Type type;
+    private Type searchType;
 
-    @JsonCreator
-    public SearchAttribute(
-            @JsonProperty("searchAttribute") String attribute,
-            @JsonProperty("value") String value,
-            @JsonProperty("searchType") Type type) {
-        this.attribute = attribute;
+    public SearchAttribute(String searchAttribute, String value, Type searchType) {
+        this.searchAttribute = searchAttribute;
         this.value = value;
-        this.type = type;
+        this.searchType = searchType;
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
