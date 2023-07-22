@@ -8,8 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Component
 public class LibraryCaller {
@@ -25,14 +28,27 @@ public class LibraryCaller {
 
         Mono<UpdateRecommendationGetExternalResponse> responseMono = webClient.post()
                 .uri("http://localhost:8081/getBooksList")
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                //.headers(httpHeaders -> httpHeaders.addAll(headers))
                 .bodyValue(getExternalRequest)
                 .retrieve()
                 .bodyToMono(UpdateRecommendationGetExternalResponse.class)
-                .onErrorResume(WebClientResponseException.class, ex->{
-                        ExceptionResponse body = ex.getResponseBodyAs(ExceptionResponse.class);
-                        System.out.println(body.getMessages());
-                        return Mono.error(body);
+                .onErrorResume(throwable -> {
+                    if (throwable instanceof WebClientResponseException responseException) {
+                        ExceptionResponse exceptionResponse = responseException.getResponseBodyAs(ExceptionResponse.class);
+                        System.out.println();
+                        return Mono.error(responseException.getResponseBodyAs(ExceptionResponse.class));
+
+                    } else if (throwable instanceof WebClientRequestException requestException){
+                        ExceptionResponse exceptionResponse = (ExceptionResponse) requestException.getCause();
+                        System.out.println();
+                        return Mono.error(exceptionResponse);
+                    }
+
+
+                    else {
+                        return Mono.error(new ExceptionResponse("ERR-004", "error", "Бизнес-ошибка, " +
+                                "произошедшая внутри системы-получателя при выполнении операции"));
+                    }
                 });
         return responseMono;
     }

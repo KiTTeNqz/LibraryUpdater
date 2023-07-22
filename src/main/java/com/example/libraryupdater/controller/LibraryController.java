@@ -1,5 +1,6 @@
 package com.example.libraryupdater.controller;
 
+import com.example.libraryupdater.exceptions.ErrorResponse;
 import com.example.libraryupdater.exceptions.ExceptionResponse;
 import com.example.libraryupdater.model.UpdateRecommendationAdapterRequest;
 import com.example.libraryupdater.service.RecommendationService;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 public class LibraryController {
@@ -18,10 +20,14 @@ public class LibraryController {
     }
 
     @PatchMapping("/updateRecommendation")
-    public ResponseEntity<String> updateRecommendation(
+    public Mono<ResponseEntity<Object>> updateRecommendation(
             @RequestHeader("x-trace-id") String traceId,
             @RequestBody UpdateRecommendationAdapterRequest request) throws ExceptionResponse {
-        recommendationService.updateRecommendation(request, traceId);
-        return ResponseEntity.ok().build();
+        return recommendationService.updateRecommendation(request, traceId)
+                .then(Mono.just(ResponseEntity.ok().build()))
+                .onErrorResume(ExceptionResponse.class, ex -> {
+                    ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getStatus(), ex.getMessages());
+                    return Mono.just(ResponseEntity.badRequest().body(errorResponse));
+                });
     }
 }
