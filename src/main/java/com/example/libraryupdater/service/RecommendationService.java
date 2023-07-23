@@ -1,7 +1,6 @@
 package com.example.libraryupdater.service;
 
 import com.example.libraryupdater.caller.LibraryCaller;
-import com.example.libraryupdater.exceptions.ErrorResponse;
 import com.example.libraryupdater.exceptions.ExceptionResponse;
 import com.example.libraryupdater.mapper.RecommendationMapper;
 import com.example.libraryupdater.model.UpdateRecommendationAdapterRequest;
@@ -32,6 +31,7 @@ public class RecommendationService {
 
         Mono<UpdateRecommendationGetExternalResponse> booksResponse = libCaller.getBooks(getBooksRequest, traceId).
                 onErrorResume(ExceptionResponse.class, Mono::error);//MARK
+
         List<Mono<UpdateRecommendationGetExternalResponse>> recommendationBooksResponse = getRecommendationRequests.stream()
                 .map(recommendation -> libCaller.getBooks(recommendation, traceId))
                 .toList();
