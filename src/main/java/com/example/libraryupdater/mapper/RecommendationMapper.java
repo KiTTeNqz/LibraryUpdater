@@ -22,10 +22,9 @@ public class RecommendationMapper {
     public UpdateRecommendationExternalRequest mapRecommendation(Recommendation recommendation){
         List<SearchAttribute> searchAttributes = new ArrayList<>();
         searchAttributes.add(new SearchAttribute("title", recommendation.getTitle(), SearchAttribute.Type.EQUAL));
-        if(recommendation.getPublisher()==null){
-            searchAttributes.add(new SearchAttribute("publisher", "", SearchAttribute.Type.NOT_EMPTY));
+        if(recommendation.getPublisher()!=null){
+            searchAttributes.add(new SearchAttribute("publisher", recommendation.getPublisher(), SearchAttribute.Type.EQUAL));
         }
-        else searchAttributes.add(new SearchAttribute("publisher", recommendation.getPublisher(), SearchAttribute.Type.EQUAL));
         return new UpdateRecommendationExternalRequest(searchAttributes);
     }
 }

@@ -48,7 +48,8 @@ public class RecommendationService {
         return responseMono.flatMap(response -> {
             List<ExternalBook> bookData = response.getBookData();
             if (bookData.isEmpty()) {
-                return Mono.error(new RuntimeException("Книги не найдены"));
+                return Mono.error(new ExceptionResponse("ERR-004", "error", "Бизнес-ошибка, " +
+                        "произошедшая внутри системы-получателя при выполнении операции"));
             }
             ExternalBook book = bookData.get(0);
             return Mono.just(book.getId());

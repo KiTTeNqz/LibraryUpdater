@@ -13,5 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateRecommendationGetExternalResponse {
+    private Integer count;
     private List<ExternalBook> bookData;
 }
