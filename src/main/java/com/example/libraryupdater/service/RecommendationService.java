@@ -24,7 +24,7 @@ public class RecommendationService {
         this.libCaller = libCaller;
     }
 
-    public Mono<Void> updateRecommendation(UpdateRecommendationAdapterRequest updateRequest, String traceId) throws ExceptionResponse {
+    public Mono<Void> updateRecommendation(UpdateRecommendationAdapterRequest updateRequest, String traceId){
 
         UpdateRecommendationExternalRequest getBooksRequest = mapper.mapId(updateRequest);
         List<UpdateRecommendationExternalRequest> getRecommendationRequests = updateRequest.getRecommendationList()

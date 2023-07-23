@@ -43,8 +43,6 @@ public class LibraryCaller {
                         System.out.println();
                         return Mono.error(exceptionResponse);
                     }
-
-
                     else {
                         return Mono.error(new ExceptionResponse("ERR-004", "error", "Бизнес-ошибка, " +
                                 "произошедшая внутри системы-получателя при выполнении операции"));

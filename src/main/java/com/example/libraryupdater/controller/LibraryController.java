@@ -24,7 +24,7 @@ public class LibraryController {
             @RequestHeader("x-trace-id") String traceId,
             @RequestBody UpdateRecommendationAdapterRequest request) throws ExceptionResponse {
         return recommendationService.updateRecommendation(request, traceId)
-                .then(Mono.just(ResponseEntity.ok().build()))
+                .thenReturn(ResponseEntity.ok().build())
                 .onErrorResume(ExceptionResponse.class, ex -> {
                     ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getStatus(), ex.getMessages());
                     return Mono.just(ResponseEntity.badRequest().body(errorResponse));

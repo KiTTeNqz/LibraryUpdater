@@ -11,19 +11,18 @@ import java.time.Instant;
 @NoArgsConstructor
 public class ErrorResponse {
     private String errorCode;
+    private String status;
     private String messages;
     private Long timestamp;
-    private String status;
-    public ErrorResponse(String error, String status, String message) {
-        this.errorCode = error;
-        this.messages = message;
-        this.timestamp = Instant.now().toEpochMilli();
+
+    public ErrorResponse(String errorCode, String status, String messages) {
+        this.errorCode = errorCode;
         this.status = status;
+        this.messages = messages;
+        this.timestamp = Instant.now().toEpochMilli();
     }
-    public ErrorResponse(String error, String status) {
-        this.errorCode = error;
-        this.messages = "";
-        this.timestamp = Instant.now().toEpochMilli();
-        this.status = status;
+
+    public ErrorResponse(String errorCode, String status) {
+        this(errorCode, status, "");
     }
 }
