@@ -1,6 +1,5 @@
 package com.example.libraryupdater.exceptions;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,7 +11,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
-        String errorCode = "ERR-004"; // Задайте общий код ошибки для всех случаев ResponseStatusException
+        String errorCode = "ERR-004";
         String status = "error";
         String message = ex.getReason() != null ? ex.getReason() : ex.getMessage();
         ErrorResponse errorResponse = new ErrorResponse(errorCode, status, message);
