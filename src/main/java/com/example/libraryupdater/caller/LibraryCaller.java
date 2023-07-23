@@ -25,22 +25,18 @@ public class LibraryCaller {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-trace-id", traceId);
-
         Mono<UpdateRecommendationGetExternalResponse> responseMono = webClient.post()
                 .uri("http://localhost:8081/getBooksList")
-                //.headers(httpHeaders -> httpHeaders.addAll(headers))
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .bodyValue(getExternalRequest)
                 .retrieve()
                 .bodyToMono(UpdateRecommendationGetExternalResponse.class)
                 .onErrorResume(throwable -> {
                     if (throwable instanceof WebClientResponseException responseException) {
-                        ExceptionResponse exceptionResponse = responseException.getResponseBodyAs(ExceptionResponse.class);
-                        System.out.println();
-                        return Mono.error(responseException.getResponseBodyAs(ExceptionResponse.class));
+                        return Mono.error(Objects.requireNonNull(responseException.getResponseBodyAs(ExceptionResponse.class)));
 
                     } else if (throwable instanceof WebClientRequestException requestException){
                         ExceptionResponse exceptionResponse = (ExceptionResponse) requestException.getCause();
-                        System.out.println();
                         return Mono.error(exceptionResponse);
                     }
                     else {
@@ -52,15 +48,18 @@ public class LibraryCaller {
     }
 
     public Mono<Void> updateRecommendation(Mono<UpdateRecommendationPatchRequest> patchRequest, String traceId){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-trace-id", traceId);
         return webClient.patch()
                 .uri("http://localhost:8081/updateRecommendation")
-                .header("x-trace-id", traceId)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .body(patchRequest, UpdateRecommendationPatchRequest.class)
                 .exchangeToMono(response -> response.bodyToMono(Void.class))
                 .onErrorResume(WebClientResponseException.class, ex->{
                     System.out.println(ex.getResponseBodyAsString());
                     ExceptionResponse body = ex.getResponseBodyAs(ExceptionResponse.class);
-                    return Mono.error(body);
+                    return Mono.error(Objects.requireNonNull(body));
                 });
     }
 
